@@ -10,6 +10,11 @@ namespace Lab1
     {
         public string id { get; set; }
         public string nazwa { get; set; }
+
+        public override string ToString()
+        {
+            return $"Przychodnia {{id={id}, nazwa={nazwa}}}";
+        }
     }
     
     public class Pacjent
@@ -18,11 +23,11 @@ namespace Lab1
         public string imie { get; set; }
         public string nazwisko { get; set; }
 
-        public List<Przychodnia> przychodnie { get; set; }
+        public Przychodnia przychodnia { get; set; }
 
         public override string ToString()
         {
-            return $"Pacjent{{id={id}, imie={imie}, nazwisko={nazwisko}}}"; ;
+            return $"Pacjent{{id={id}, imie={imie}, nazwisko={nazwisko}, przychodnia={przychodnia}}}"; ;
         }
 
     }
