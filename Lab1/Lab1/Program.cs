@@ -32,7 +32,7 @@ namespace Lab1
             {
                 Database database = await client.CreateDatabaseIfNotExistsAsync("Lab1Db");
                 Container patientMap = await database.CreateContainerIfNotExistsAsync("Pacjenci", "/id");
-                Container przychodnieMap = await database.CreateContainerIfNotExistsAsync("Przychonie", "/id");
+                Container przychodnieMap = await database.CreateContainerIfNotExistsAsync("Przychodnie", "/id");
 
                 for(int i = 1; i <= 10; i++)
                 {
@@ -119,7 +119,7 @@ namespace Lab1
                         string przychodniaId = Random.Shared.Next(1, 11).ToString();
                         Przychodnia przychodnia = await przychodnieMap.ReadItemAsync<Przychodnia>(przychodniaId, new PartitionKey(przychodniaId));
 
-                        Pacjent newPacjent = new Pacjent { id = i.ToString(), imie = $"Imie_{i}", nazwisko = $"Nazwisko_{i}", przychodnia = przychodnia };
+                        Pacjent newPacjent = new Pacjent { id = i.ToString(), imie = $"Nowe_Imie_{i}", nazwisko = $"Nowe_Nazwisko_{i}", przychodnia = przychodnia };
                         await pacjentMap.UpsertItemAsync(newPacjent);
                     }
                     stopwatch.Stop();
