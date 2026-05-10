@@ -10,7 +10,7 @@ namespace Lab1
     {
         private const string EmulatorKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         private const string Endpoint = "https://localhost:8081";
-        private const string FileName = "Wyniki_Hazelcast.txt";
+        private const string FileName = "Wyniki_CosmosDB_Klucz-Wartosc.txt";
         private const int amount = 1000;
 
 
