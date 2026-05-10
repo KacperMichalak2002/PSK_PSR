@@ -113,26 +113,42 @@ namespace Lab1
                 case "3":
                     operationName = "Aktualizuj";
                     stopwatch.Start();
-                    
-                    for(int i = 1; i <= amount; i++)
+                    try
                     {
-                        string przychodniaId = Random.Shared.Next(1, 11).ToString();
-                        Przychodnia przychodnia = await przychodnieMap.ReadItemAsync<Przychodnia>(przychodniaId, new PartitionKey(przychodniaId));
+                        for (int i = 1; i <= amount; i++)
+                        {
+                            string przychodniaId = Random.Shared.Next(1, 11).ToString();
+                            Przychodnia przychodnia = await przychodnieMap.ReadItemAsync<Przychodnia>(przychodniaId, new PartitionKey(przychodniaId));
 
-                        Pacjent newPacjent = new Pacjent { id = i.ToString(), imie = $"Nowe_Imie_{i}", nazwisko = $"Nowe_Nazwisko_{i}", przychodnia = przychodnia };
-                        await pacjentMap.UpsertItemAsync(newPacjent);
+                            Pacjent newPacjent = new Pacjent { id = i.ToString(), imie = $"Nowe_Imie_{i}", nazwisko = $"Nowe_Nazwisko_{i}", przychodnia = przychodnia };
+                            await pacjentMap.ReplaceItemAsync(newPacjent, i.ToString(), new PartitionKey(i.ToString()));
+                        }
                     }
+                    catch (CosmosException e)
+                    {
+                        Console.WriteLine(e.StatusCode);
+                        break;
+                    }
+
                     stopwatch.Stop();
                     break;
                 case "4":
                     operationName = "Usuń";
                     stopwatch.Start();
-
-                    for(int i =1; i <= amount; i++)
+                    try
                     {
-                        string id = i.ToString();
-                        await pacjentMap.DeleteItemAsync<Pacjent>(id, new PartitionKey(id));
+                        for (int i = 1; i <= amount; i++)
+                        {
+                            string id = i.ToString();
+                            await pacjentMap.DeleteItemAsync<Pacjent>(id, new PartitionKey(id));
+                        }
                     }
+                    catch (CosmosException e)
+                    {
+                        Console.WriteLine(e.StatusCode);
+                        break;
+                    }
+
 
                     stopwatch.Stop();
                     break;
