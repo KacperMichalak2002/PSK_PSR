@@ -122,6 +122,28 @@ namespace Lab2
                     operationName = "Pobierz";
                     stopwatch.Start();
 
+                    using (IDocumentSession session = store.OpenSession())
+                    {
+                        var serwisy = session.Query<Serwis>()
+                            .Include<Serwis>(x => x.SamochodyId)
+                            .Take(amount)
+                            .ToList();
+
+
+                        foreach(var serwis in serwisy)
+                        {
+                            Console.WriteLine(serwis);
+                            foreach(var carId in serwis.SamochodyId)
+                            {
+                                var car = session.Load<Samochod>(carId);
+                                if(car != null)
+                                    Console.WriteLine(car);
+                            }
+                        }
+                    }
+
+                    
+
                     stopwatch.Stop();
                     break;
                 case "3":
