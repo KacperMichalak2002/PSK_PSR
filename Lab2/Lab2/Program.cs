@@ -171,6 +171,25 @@ namespace Lab2
                     operationName = "Usuń";
                     stopwatch.Start();
 
+                    using(IDocumentSession session = store.OpenSession())
+                    {
+                        var serwisy = session.Query<Serwis>()
+                            .Include<Serwis>(x => x.SamochodyId)
+                            .Take(amount)
+                            .ToList();
+
+                        foreach(var serwis in serwisy)
+                        {
+                            foreach(var carId in serwis.SamochodyId)
+                            {
+                                var car = session.Load<Samochod>(carId);
+                                if (car != null)
+                                    session.Delete(car);
+                            }
+                            session.Delete(serwis);
+                        }
+                        session.SaveChanges();
+                    }
                     stopwatch.Stop();
                     break;
                 default:
