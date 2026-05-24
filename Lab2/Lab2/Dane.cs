@@ -12,7 +12,6 @@ namespace Lab2
         public string Marka { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
         public int RokProdukcji { get; set; }
-        public string SerwisId { get; set; } = string.Empty;
 
     }
 

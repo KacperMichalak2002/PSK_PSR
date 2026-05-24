@@ -1,6 +1,9 @@
 ﻿
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
+using Raven.Client.Exceptions;
+using Raven.Client.ServerWide;
+using Raven.Client.ServerWide.Operations;
 using System.Diagnostics;
 
 namespace Lab2
@@ -11,6 +14,7 @@ namespace Lab2
         private static readonly Random random = new Random();
         private const string FILE_NAME = "Wyniki_RavenDB_Dokumenty.txt";
         private const string Endpoint = "http://localhost:8080";
+        private const string databaseName = "Lab2HomeworkRavenDB";
         private const int amount = 1000;
 
         static int Main(string[] args)
@@ -23,11 +27,23 @@ namespace Lab2
                 {
                     Endpoint
                 },
-                Database = "Lab2HomeworkRavenDB",
+                Database = databaseName,
                 Conventions = { }
             })
             {
                 store.Initialize();
+
+                try
+                {
+                    DatabaseRecord databaseRecord = new DatabaseRecord(databaseName);
+                    CreateDatabaseOperation createDatabaseOperation = new CreateDatabaseOperation(databaseRecord);
+
+                    store.Maintenance.Server.Send(createDatabaseOperation);
+                    Console.WriteLine("Baza utworzona");
+                }catch(ConcurrencyException e)
+                {
+                    Console.WriteLine($"Baza danych już istnieje {e.Message}");
+                }
 
 
                 while (true)
@@ -44,9 +60,6 @@ namespace Lab2
 
                     HandleOperation(choice, store);
                 }
-
-
-               
             }
 
 
@@ -64,6 +77,44 @@ namespace Lab2
                 case "1":
                     operationName = "Zapisz";
                     stopwatch.Start();
+
+
+                    using (IDocumentSession session = store.OpenSession())
+                    {
+                        for(int i = 0; i < amount; i++)
+                        {
+                            Samochod car1 = new Samochod
+                            {
+                                Marka = "Marka_" + random.Next(10_000),
+                                Model = "Model_" + random.Next(1000),
+                                RokProdukcji = 1980 + random.Next(46)
+                            };
+
+                            Samochod car2 = new Samochod
+                            {
+                                Marka = "Marka_" + random.Next(10_000),
+                                Model = "Model_" + random.Next(1000),
+                                RokProdukcji = 1980 + random.Next(46)
+                            };
+
+                            session.Store(car1);
+                            session.Store(car2);
+
+
+                            Serwis serwis = new Serwis
+                            {
+                                Nazwa = "Nazwa_" + random.Next(10_000),
+                                Miasto = "Miasto_" + random.Next(1000),
+                                SamochodyId = new List<string> { car1.Id!, car2.Id! }
+                            };
+
+                            session.Store(serwis);
+
+                        }
+
+                        session.SaveChanges();
+                    }
+
 
                     stopwatch.Stop();
                     break;
@@ -101,7 +152,7 @@ namespace Lab2
             try
             {
                 using StreamWriter streamWriter= new StreamWriter(FILE_NAME, append: true);
-                streamWriter.WriteLine($"{sklad};{operationName}:{time};");
+                streamWriter.WriteLine($"{sklad};{operationName};{time};");
 
             }catch(Exception e)
             {
