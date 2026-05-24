@@ -150,6 +150,21 @@ namespace Lab2
                     operationName = "Aktualizuj";
                     stopwatch.Start();
 
+                    using(IDocumentSession session = store.OpenSession())
+                    {
+                        var serwisy = session.Query<Serwis>()
+                            .Take(amount)
+                            .ToList();
+
+                        foreach(var serwis in serwisy)
+                        {
+                            serwis.Nazwa = "Nowa_Nazwa_" + random.Next(10_000);
+                        }
+
+                        session.SaveChanges();
+                    }
+
+
                     stopwatch.Stop();
                     break;
                 case "4":
