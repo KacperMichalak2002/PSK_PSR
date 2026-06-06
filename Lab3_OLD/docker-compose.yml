@@ -1,5 +1,0 @@
-services:
-  elassandra:
-    image: strapdata/elassandra:latest
-    ports:
-      - "9042:9042"
