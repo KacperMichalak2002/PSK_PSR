@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Praca_domowa_kolumnowa": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
