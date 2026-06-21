@@ -1,30 +1,44 @@
-﻿
+﻿using NFalkorDB;
 using System.Diagnostics;
-using static System.Formats.Asn1.AsnWriter;
+
 
 namespace Lab4
 {
     class Program
     {
-        private static readonly Random random = new Random();
-        private const string FILE_NAME = "Wyniki_DB_Dokumenty.txt";
+        private const string FILE_NAME = "Wyniki_Baza_Grafowa.txt";
+        private static LeageService _leagueService;
         private const int amount = 1000;
         static void Main(string[] args)
         {
-            while (true)
+
+
+            var client = new FalkorDB("localhost:6379");
+            Graph graph = client.SelectGraph("Liga");
+
+            _leagueService = new LeageService(graph);
+
+            try
             {
-                Console.WriteLine($"1. Zapisz {amount} pacjentów");
-                Console.WriteLine($"2. Pobierz {amount} pacjentów");
-                Console.WriteLine($"3. Aktualizuj {amount} pacjentów");
-                Console.WriteLine($"4. Usuń {amount} pacjentów");
-                Console.WriteLine($"0. Wyjdź");
+                while (true)
+                {
+                    Console.WriteLine($"1. Zapisz {amount} lig");
+                    Console.WriteLine($"2. Pobierz {amount} lig");
+                    Console.WriteLine($"3. Aktualizuj {amount} lig");
+                    Console.WriteLine($"4. Usuń {amount} lig");
+                    Console.WriteLine($"0. Wyjdź");
 
-                string choice = Console.ReadLine();
-                if (string.Equals(choice, "0"))
-                    break;
+                    string choice = Console.ReadLine();
+                    if (string.Equals(choice, "0"))
+                        break;
 
-                HandleOperation(choice);
+                    HandleOperation(choice);
+                }
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
+           
         }
 
         private static void HandleOperation(string? choice)
@@ -39,9 +53,7 @@ namespace Lab4
                     operationName = "Zapisz";
                     stopwatch.Start();
 
-
-                   
-
+                    _leagueService.Insert1000();
 
                     stopwatch.Stop();
                     break;
@@ -49,7 +61,7 @@ namespace Lab4
                     operationName = "Pobierz";
                     stopwatch.Start();
 
-
+                    _leagueService.Select1000();
 
                     stopwatch.Stop();
                     break;
@@ -57,13 +69,15 @@ namespace Lab4
                     operationName = "Aktualizuj";
                     stopwatch.Start();
 
-                  
+                    _leagueService.Update1000();
+
                     stopwatch.Stop();
                     break;
                 case "4":
                     operationName = "Usuń";
                     stopwatch.Start();
 
+                    _leagueService.Delete1000();
                   
                     stopwatch.Stop();
                     break;
@@ -72,7 +86,7 @@ namespace Lab4
             }
 
             long time = stopwatch.ElapsedMilliseconds;
-            SaveToFile("RavenDB", operationName, time);
+            SaveToFile("FalkorDB", operationName, time);
             Console.WriteLine($"Wykonano:\n{operationName} w czasie {time} ms");
 
 
